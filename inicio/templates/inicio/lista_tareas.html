@@ -3,27 +3,85 @@
 <html lang="es">
     <head>
         <meta charset="UTF-8">
-        <title>Mis Tareas</title>
+        <meta http-equiv="X-UA-Compatible" content="IE=edge">
+        <meta name="viewport" content="width=device-width, initial-scale=1.0">
+        <title>Gestor de Tareas</title>
+        <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.8/dist/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-sRIl4kxILFvY47J16cr9ZwB07vP4J8+LH7qKQnuqkuIAvNWLzeN8tE5YBujZqJLB" crossorigin="anonymous">
         <link rel="stylesheet" type="text/css" href="{% static 'inicio/css/styles.css' %}">
     </head>
-    <body>
-        <h1>Lista de tareas pendientes</h1>
+    <body class="bg-light">
+        <div class="container py-5">
+            <div class="row justify-content-center">
+                <div class="col-md-8">
+                    <div class="card shadow">
+                        <div class="card-header bg-primary text-white">
+                            <h2 class="h5 mb-0">Lista de tareas</h2>
+                        </div>
+                        <div class="card-body">
+                            <form method="POST" class="mb-4">
+                                {% csrf_token %}
+                                <div class="input-group">
+                                    <input type="text" name="titulo" class="form-control" placeholder="Tarea" required>
+                                    <button class="btn btn-primary" type="submit">Añadir tarea</button>
+                                </div>
+                            </form>
 
-        <form method="POST" style="margin-bottom: 20px;">
-            {% csrf_token %} {{ form.as_p }} <button type="submit">Añadir tarea</button>
-        </form>
+                            <hr/>
 
-        <hr/>
+                            <div class="table-responsive">
+                                <table class="table table-hover align-middle">
+                                    <thead class="table-light">
+                                        <tr>
+                                            <th>Tarea</th>
+                                            <th class="text-center">Estado</th>
+                                            <th class="text-end">Acciones</th>
+                                        </tr>
+                                    </thead>
+                                    <tbody>
+                                        {% for tarea in tareas %}
+                                        <tr>
+                                            <td class="{% if tarea.completada %}text-decoration-linte-through text-muted{% endif %}">
+                                                {{ tarea.titulo }}
+                                            </td>
 
-        <ul>
-            {% for tarea in tareas %}
-                <li>
-                    <strong>{{ tarea.titulo }}</strong> -
-                    {% if tarea.completada %} ✅ Completada {% else %} ⌛ Pendiente {% endif %}
-                </li>
-            {% empty %}
-                <li>Sin tareas</li>
-            {% endfor %}
-        </ul>
+                                            <td class="text-center">
+                                                {% if tarea.completada %}
+                                                    <span class="badge rounded-pill bg-success">✅ Completada</span>
+                                                {% else %}
+                                                    <span class="badge rounded-pill bg-warning text-dark">⌛ Pendiente</span>
+                                                {% endif %}
+                                            </td>
+
+                                            <td class="text-end">
+                                                <div class="btn-group shadow-sm">
+                                                    {% if not tarea.completada %}
+                                                        <a href="{% url 'completar_tarea' tarea.id %}" class="btn btn-sm btn-outline-success">
+                                                            Marcar como completada
+                                                        </a>
+                                                    {% else %}
+                                                        <a href="{% url 'completar_tarea' tarea.id %}" class="btn btn-sm btn-outline-success">
+                                                            Marcar como pendiente
+                                                        </a>
+                                                    {% endif %}
+                                                </div>
+                                            </td>
+                                        </tr>
+                                        {% empty %}
+                                        <tr>
+                                            <td colspan="3" class="text-center text-muted py-4">
+                                                No hay tareas registradas.
+                                            </td>
+                                        </tr>
+                                        {% endfor %}
+                                    </tbody>
+                                </table>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.8/dist/js/bootstrap.bundle.min.js" integrity="sha384-FKyoEForCGlyvwx9Hj09JcYn3nv7wiPVlz7YYwJrWVcXK/BmnVDxM+D2scQbITxI" crossorigin="anonymous"></script>
     </body>
 </html>
